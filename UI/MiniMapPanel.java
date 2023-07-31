@@ -16,7 +16,7 @@ public class MiniMapPanel extends JPanel {
 
     public MiniMapPanel(GameMap map, Room curRoom) {
         this.map = map;
-        this.curRoom = map.map[0][0];
+        this.curRoom = map.map[23][23]; //TODO [0][0]
         this.d = Direction.SOUTH;
 
     }

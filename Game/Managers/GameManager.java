@@ -13,8 +13,10 @@ public class GameManager {
     private PlayerController playerController;
     private EnemiesController enemiesController;
     private MiniMapPanel miniMapPanel;
-    private LevelManager levelManager;
     private MapPanel mapPanel;
+    private LevelManager levelManager;
+    private TurnManager turnManager;
+
     public GameManager(PlayerController pC, MiniMapPanel mMP, LevelManager lM,GameMap gM,MapPanel mP) {
         playerController = pC;
         miniMapPanel = mMP;
@@ -22,6 +24,7 @@ public class GameManager {
         gameMap = gM;
         mapPanel = mP;
         enemiesController = new EnemiesController(gM,pC);
+        turnManager = new TurnManager(playerController,enemiesController,gameMap);
     }
 
 

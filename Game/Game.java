@@ -26,11 +26,11 @@ public class Game {
         );
 
         LevelManager levelManager = new LevelManager(Radagon);
-        PlayerController playerController = new PlayerController(Radagon,gameMap.getStartingRoom());
+        PlayerController playerController = new PlayerController(Radagon,gameMap.map[23][23]);
 
 
         //Panels
-        MiniMapPanel miniMapPanel = new MiniMapPanel(gameMap,playerController.getCurrentRoom());
+        MiniMapPanel miniMapPanel = new MiniMapPanel(gameMap,gameMap.map[23][23]);
         MapPanel mapPanel = new MapPanel(playerController,gameMap);
         mapPanel.setCurrentRoom(playerController.getCurrentRoom());
         PlayerStatus playerStatus = new PlayerStatus(Radagon);
