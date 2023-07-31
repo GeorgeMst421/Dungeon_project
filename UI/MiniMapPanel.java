@@ -14,10 +14,10 @@ public class MiniMapPanel extends JPanel {
     private Room curRoom;
     private Direction d;
 
-    public MiniMapPanel(GameMap map, Room curRoom, Direction d) {
+    public MiniMapPanel(GameMap map, Room curRoom) {
         this.map = map;
-        this.curRoom = curRoom;
-        this.d = d;
+        this.curRoom = map.map[0][0];
+        this.d = Direction.SOUTH;
 
     }
 
@@ -104,4 +104,7 @@ public class MiniMapPanel extends JPanel {
     }
 
 
+    public void setGameMap(GameMap gameMap) {
+        this.map = gameMap;
+    }
 }

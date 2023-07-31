@@ -2,6 +2,8 @@ package UI;
 
 import Enemy.AbstractEnemy;
 import Enums.Direction;
+import Game.Controllers.PlayerController;
+import Game.GameMap;
 import Game.Room;
 
 import javax.imageio.ImageIO;
@@ -14,6 +16,60 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapPanel extends JPanel {
+    final int width = 256;
+    final int height = 256;
+    Map<String, BufferedImage> wallImages;
+    private Room currentRoom;
+    private PlayerController playerController;
+    private GameMap gameMap;
+
+    public MapPanel(PlayerController playerController, GameMap gameMap) {
+        setPreferredSize(new Dimension(width, height));
+        wallImages = readImages();
+        currentRoom = null;
+        this.playerController = playerController;
+        this.gameMap = gameMap;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        try {
+            Direction currentDirection = playerController.getCurrentDirection();
+            Map<Room, AbstractEnemy> enemyLocations = new HashMap<>();
+            for(int i = 0; i < gameMap.getMapWidth(); i++) {
+                for(int j = 0; j < gameMap.getMapHeight(); j++) {
+                    Room room = gameMap.getRoomAt(i, j);
+                    AbstractEnemy enemy = room.getEnemy();
+                    if(enemy != null) {
+                        enemyLocations.put(room, enemy);
+                    }
+                }
+            }
+            paintMap(currentRoom, currentDirection, enemyLocations, g);
+        } catch(IOException ioex) {
+            System.out.println("Error drawing first person view");
+            ioex.printStackTrace();
+        }
+    }
+    public void updateRoomAndRepaint(Room newRoom) {
+        this.currentRoom = newRoom;
+        this.repaint();
+    }
+
+    void paintMap(Room r, Direction d, Map<Room, AbstractEnemy> enemyLocations, Graphics g) throws IOException {
+        BufferedImage b = getImage(r, d);
+        Room rn = r.getRoomAt(d);
+        if(enemyLocations.get(rn) != null) {
+            paintEnemyClose(b, enemyLocations.get(rn));
+            Room rnn = rn.getRoomAt(d);
+            if(enemyLocations.get(rnn) != null) {
+                paintEnemyFar(b, enemyLocations.get(rn));
+            }
+        }
+        g.drawImage(b, 0, 0, null);
+    }
+
     // Images for drawing
     Map<String, BufferedImage> readImages() {
         try {
@@ -49,15 +105,9 @@ public class MapPanel extends JPanel {
             return null;
         }
     }
-    final int width = 256;
-    final int height = 256;
-    Map<String, BufferedImage> wallImages;
-    Room currentRoom;
-    public MapPanel() {
-        setPreferredSize(new Dimension(width, height));
-        wallImages = readImages();
-        currentRoom = null;
-    }
+
+
+
     public BufferedImage paintEnemyClose(BufferedImage i, AbstractEnemy e) throws IOException {
         Graphics2D g = (Graphics2D)i.getGraphics();
         g.drawImage(e.getSprite(), 128-64, 256-128, 128, 128, null);
@@ -119,18 +169,8 @@ public class MapPanel extends JPanel {
         }
         return b;
     }
-    void paintMap(Room r, Direction d, Map<Room, AbstractEnemy> enemyLocations) throws IOException {
-        Graphics2D g = (Graphics2D) getGraphics();
-        BufferedImage b = getImage(r, d);
-// b = paintEnemyFar(b, new Goblin());
-        Room rn = r.getRoomAt(d);
-        if(enemyLocations.get(rn) != null) {
-            paintEnemyClose(b, enemyLocations.get(rn));
-            Room rnn = rn.getRoomAt(d);
-            if(enemyLocations.get(rnn) != null) {
-                paintEnemyFar(b, enemyLocations.get(rn));
-            }
-        }
-        g.drawImage(b, 0, 0, null);
+
+    public void setCurrentRoom(Room room){
+        currentRoom = room;
     }
 }

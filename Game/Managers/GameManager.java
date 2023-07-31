@@ -1,20 +1,27 @@
 package Game.Managers;
 
 import Enums.Command;
+import Enums.Direction;
+import Game.Controllers.EnemiesController;
 import Game.GameMap;
 import Game.Controllers.PlayerController;
+import UI.MapPanel;
 import UI.MiniMapPanel;
 
 public class GameManager {
     private GameMap gameMap;
     private PlayerController playerController;
+    private EnemiesController enemiesController;
     private MiniMapPanel miniMapPanel;
     private LevelManager levelManager;
-    public GameManager(PlayerController playerController, MiniMapPanel miniMapPanel, LevelManager levelManager,GameMap gameMap) {
-        this.playerController = playerController;
-        this.miniMapPanel = miniMapPanel;
-        this.levelManager = levelManager;
-        this.gameMap = gameMap;
+    private MapPanel mapPanel;
+    public GameManager(PlayerController pC, MiniMapPanel mMP, LevelManager lM,GameMap gM,MapPanel mP) {
+        playerController = pC;
+        miniMapPanel = mMP;
+        levelManager = lM;
+        gameMap = gM;
+        mapPanel = mP;
+        enemiesController = new EnemiesController(gM,pC);
     }
 
 
@@ -25,11 +32,12 @@ public class GameManager {
             }
             case TURN_RIGHT -> {
                 playerController.turnRight();
-//                miniMapPanel.updateMiniMap(playerController.getCurrentRoom(), playerController.getCurrentDirection());
             }
             case MOVE -> {
                 playerController.moveForward();
-                if(playerController.getCurrentRoom().isFinish()) nextMap();
+                if(playerController.getCurrentRoom().isFinish()) {
+                    nextMap();
+                };
             }
             case ATTACK -> {
                 playerController.attack();
@@ -49,23 +57,24 @@ public class GameManager {
 
         }
         miniMapPanel.updateMiniMap(playerController.getCurrentRoom(), playerController.getCurrentDirection());
-
+        mapPanel.updateRoomAndRepaint(playerController.getCurrentRoom());
     }
 
-    public void spawnNewEnemy() {
-        levelManager.generateEnemies(); // generates the list of enemies to be spawned depending on player level
-        EnemySpawnManager spawnManager = new EnemySpawnManager(gameMap.getEmptyRooms(), levelManager.getEnemiesToSpawn());
-        spawnManager.spawnEnemy();
+    private void spawnNewEnemies() {
+        levelManager.spawnEnemies(gameMap, enemiesController);
     }
-    public void nextMap() {
+    private void nextMap() {
         // Generate a new map
         gameMap = levelManager.generateNextMap(); // Here also enemies are spawned
 
         // Update the player's current room to the starting room of the new map
-        playerController.setCurrentRoom(gameMap.map[0][0]);
+        playerController.setCurrentRoom(gameMap.getStartingRoom());
+        playerController.setCurrentDirection(Direction.SOUTH);
 
-        // Update the mini map
-        miniMapPanel.updateMiniMap(playerController.getCurrentRoom(), playerController.getCurrentDirection());
+        miniMapPanel.setGameMap(gameMap);
+
+        spawnNewEnemies();
+
     }
 }
 

@@ -6,37 +6,45 @@ import Game.Room;
 
 import java.util.*;
 
-public class EnemyController {
-    private AbstractEnemy enemy;
+public class EnemiesController {
+    private List<AbstractEnemy> enemies;
     private GameMap gameMap;
     private final PlayerController playerController;
 
-    public EnemyController(AbstractEnemy enemy, GameMap gameMap, PlayerController playerController) {
-        this.enemy = enemy;
+    public EnemiesController(GameMap gameMap, PlayerController playerController) {
+        this.enemies = new ArrayList<>();
         this.gameMap = gameMap;
         this.playerController = playerController;
     }
 
-    public void moveTowardsPlayer() {
-        Room start = enemy.getRoom();
-        Room goal = playerController.getCurrentRoom();
-
-        List<Room> cameFrom = breadthFirstSearch(start, goal);
-
-        if(cameFrom == null) {
-            System.out.println("No path to player found.");
-            return;
-        }
-
-        // Get the next room in the path towards the player
-        Room nextRoom = getNextRoomInPath(start, goal, cameFrom);
-
-        if(nextRoom != null) {
-            // Only move the enemy if there is a next room
-            enemy.setRoom(nextRoom);
-        }
+    public void addEnemy(AbstractEnemy enemy){
+        this.enemies.add(enemy);
     }
 
+    public List<AbstractEnemy> getEnemies(){
+        return enemies;
+    }
+    public void moveEnemiesTowardsPlayer() {
+        for(AbstractEnemy enemy : enemies) {
+            Room start = enemy.getRoom();
+            Room goal = playerController.getCurrentRoom();
+
+            List<Room> cameFrom = breadthFirstSearch(start, goal);
+
+            if (cameFrom == null) {
+                System.out.println("No path to player found.");
+                return;
+            }
+
+            // Get the next room in the path towards the player
+            Room nextRoom = getNextRoomInPath(start, goal, cameFrom);
+
+            if (nextRoom != null) {
+                // Only move the enemy if there is a next room
+                enemy.setRoom(nextRoom);
+            }
+        }
+    }
 
     private List<Room> breadthFirstSearch(Room start, Room goal) {
             class RoomPath {
@@ -82,5 +90,6 @@ public class EnemyController {
             return null;
         }
     }
+
 
 }

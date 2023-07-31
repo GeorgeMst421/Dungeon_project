@@ -1,6 +1,7 @@
 package Game.Managers;
 
 import Enemy.*;
+import Game.Controllers.EnemiesController;
 import Game.GameMap;
 import Game.Managers.EnemySpawnManager;
 import character.AbstractChars.AbstractPlayer;
@@ -12,12 +13,11 @@ import java.util.Random;
 public class LevelManager {
     private final int MAX_MAPS = 5;
     private int currentMapIndex = 1;
-    private List<AbstractEnemy> enemiesToSpawn;
+    private List<AbstractEnemy> enemiesToSpawn = new ArrayList<>();
     private AbstractPlayer player;
 
     public LevelManager(AbstractPlayer player) {
         this.player = player;
-        this.enemiesToSpawn = new ArrayList<>();
     }
 
     public GameMap generateNextMap() {
@@ -32,17 +32,17 @@ public class LevelManager {
         return newMap;
     }
 
-    protected void spawnEnemies(GameMap map){
+    public void spawnEnemies(GameMap map, EnemiesController eC){
         generateEnemies();
 
-        EnemySpawnManager spawnManager = new EnemySpawnManager(map.getEmptyRooms(), enemiesToSpawn);
+        EnemySpawnManager spawnManager = new EnemySpawnManager(map.getEmptyRooms(), enemiesToSpawn, eC);
 
-        for(AbstractEnemy enemy : enemiesToSpawn){
+        for(int i=0; i<enemiesToSpawn.size(); i++){
             spawnManager.spawnEnemy();
         }
     }
 
-     protected void generateEnemies() {
+     private void generateEnemies() {
         enemiesToSpawn.clear();
         Random rng = new Random();
         int numberOfEnemies = 3;
@@ -91,9 +91,5 @@ public class LevelManager {
             enemiesToSpawn.clear();
             enemiesToSpawn.add(new Leoric());
         }
-    }
-
-    public List<AbstractEnemy> getEnemiesToSpawn() {
-        return enemiesToSpawn;
     }
 }

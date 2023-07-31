@@ -14,9 +14,9 @@ public class PlayerController {
     private final AbstractPlayer player;
     private Room currentRoom;
     private Direction currentDirection;
-    public PlayerController(AbstractPlayer player, Room startingRoom, Direction startingDirection) {
+    public PlayerController(AbstractPlayer player, Room startingRoom) {
         this.currentRoom = startingRoom;
-        this.currentDirection = startingDirection;
+        this.currentDirection = Direction.SOUTH;
         this.player = player;
     }
     public void turnLeft() {
@@ -38,6 +38,7 @@ public class PlayerController {
             currentRoom = nextRoom;
             currentRoom.visit();
             currentRoom.occupy();
+            System.out.println("X: " + currentRoom.col + " Y: " + currentRoom.row);
         }
     }
     public void attack() {
@@ -124,6 +125,7 @@ public class PlayerController {
         return currentDirection;
     }
     public void setCurrentRoom(Room room){currentRoom = room;}
+    public void setCurrentDirection(Direction direction){currentDirection = direction;}
 
 }
 

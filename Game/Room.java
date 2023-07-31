@@ -70,15 +70,12 @@ public class Room {
         else System.out.println("You can't connect these rooms");
     }
 
+    public List<Item> getItemsOnRoom(){return itemsOnRoom;}
     public AbstractEnemy getEnemy(){return enemy;}
     public void setEnemy(AbstractEnemy enemy){this.enemy = enemy;}
     public boolean isFinish(){return finish;}
     public boolean isVisited(){return visited;}
-    public void visit(){
-        visited = true;
-    }
-    public List<Item> getItemsOnRoom(){return itemsOnRoom;}
-
+    public void visit(){visited = true;}
     public void occupy() {
         occupied = true;
     }

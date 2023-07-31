@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class GameMap {
     private final int width;
     private final int height;
-    public Room[][] map;
+    public Room[][] map; //TODO PRIVATE IN THE END AFTER DEBUGGING map[23][23]
 
      public GameMap(int i, int j){
          map = generateMap(i,j);
@@ -116,5 +116,8 @@ public class GameMap {
         }
     }
 
+    public Room getStartingRoom(){
+         return map[0][0];
+    }
 
 }
