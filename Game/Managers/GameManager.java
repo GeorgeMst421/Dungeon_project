@@ -16,6 +16,7 @@ public class GameManager implements EventListener {
     private final List<EnemyController> enemyControllers = new ArrayList<>();
     private final EnemySpawnManager enemySpawnManager;
     private final EnemyTurnManager enemyTurnManager;
+    private final PlayerTurnManager playerTurnManager;
     private final MiniMapPanel miniMapPanel;
     private final MapPanel mapPanel;
     private final PlayerStatus playerStatus;
@@ -31,88 +32,33 @@ public class GameManager implements EventListener {
         enemyTurnManager = new EnemyTurnManager(playerController,enemyControllers);
         enemyTurnManager.addEventListener(this);
 
+        playerTurnManager = new PlayerTurnManager(playerController, enemyControllers);
+        playerTurnManager.addEventListener(this);
+
         mapPanel = new MapPanel(playerController,gameMap);
         miniMapPanel = new MiniMapPanel(gameMap,playerController.getCurrentRoom());
         playerStatus = new PlayerStatus(player);
         playerStatus.addEventListener(this);
-        spawnNewEnemies();
+        spawnEnemies();
 
     }
 
     public void executeCommand(Command command) {
-        boolean isEnemyTurn = true;
-        switch (command) {
-            case TURN_LEFT -> {
-                playerController.turnLeft();
-                isEnemyTurn = false;
-            }
-            case TURN_RIGHT -> {
-                playerController.turnRight();
-                isEnemyTurn = false;
-            }
-            case MOVE -> {
-                if(playerController.facingEnemy()){
-                    Game.log("Can't move. Facing Enemy");
-                    isEnemyTurn = false;
-                }
-                else if(playerController.facingWall()){
-                    Game.log("Can't move inside the wall");
-                    isEnemyTurn = false;
+        boolean isEnemyTurn = playerTurnManager.playerTurn(command); // returns a boolean for the enemy turn
 
-                }else {
-                    playerController.moveForward();
-                    Game.log("You moved to " + playerController.getCurrentRoom().row + " " +playerController.getCurrentRoom().col);
-                    if (playerController.getCurrentRoom().isFinish()) {
-                        nextMap();
-                    }
-                }
-
-            }
-            case ATTACK -> {
-                Optional<EnemyController> enemyControllerOptional = enemyControllers.stream()
-                        .filter(eC -> eC.getRoom() == playerController.getFacingRoom())
-                        .findFirst();
-
-                if(enemyControllerOptional.isEmpty()){
-                    Game.log("You are not facing an enemy");
-                }
-                else{
-                    EnemyController enemyController = enemyControllerOptional.get();
-                    playerController.attack(enemyController);
-                    if (enemyController.isDead()) {
-                        enemyControllers.remove(enemyController);
-                        Game.log("Enemy died");
-                        playerController.getEXP(enemyController.giveEXP());
-                        Game.log("Got " + enemyController.giveEXP() + " exp");
-                        
-                    }
-                }
-
-            }
-            case SPELL -> {
-                playerController.spell();
-            }
-            case REST -> {
-                playerController.rest();
-            }
-            case HEALTH_POTION -> {
-                playerController.useHealthPot();
-            }
-            case MANA_POTION -> {
-                playerController.useManaPot();
-            }
+        if (playerController.getCurrentRoom().isFinish()) {
+            nextMap();
         }
+        if(enemyControllers.size() < 3) spawnEnemies();
         if(isEnemyTurn)
             enemyTurnManager.enemyTurn();
         else onEvent();
 
     }
 
-    private void spawnNewEnemies() {
-        //Ensuring that GameManager and EnemyTurnManager has the same reference to the List<EnemyController>
-        List<EnemyController> spawnedEnemies = enemySpawnManager.spawnEnemies();
-        enemyControllers.clear();
-        enemyControllers.addAll(spawnedEnemies);
+    private void spawnEnemies() {
+        while(enemyControllers.size() < 3)
+            enemyControllers.add(enemySpawnManager.spawnEnemy());
     }
     private void nextMap() {
         // Generate a new map
@@ -128,7 +74,9 @@ public class GameManager implements EventListener {
 
         miniMapPanel.setGameMap(gameMap);
         mapPanel.setGameMap(gameMap);
-        spawnNewEnemies();
+
+        enemyControllers.clear();
+        spawnEnemies();
 
     }
 

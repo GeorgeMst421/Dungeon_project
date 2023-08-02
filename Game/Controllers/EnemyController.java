@@ -27,7 +27,7 @@ public class EnemyController {
     }
     public void attackPlayer(PlayerController playerController){
 
-        playerController.takeDamage(enemy.attack());
+//        playerController.takeDamage(enemy.attack());
     }
 
     public boolean isDead(){
