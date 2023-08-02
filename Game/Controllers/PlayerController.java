@@ -1,14 +1,12 @@
 package Game.Controllers;
 
-import Enemy.AbstractEnemy;
+import Enemy.*;
 import Enums.*;
-import Game.Room;
-import Items.Consumables.HealthPotion;
-import Items.Consumables.ManaPotion;
+import Game.*;
+import Items.Consumables.*;
 import character.AbstractChars.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PlayerController {
     private final AbstractPlayer player;
@@ -32,31 +30,21 @@ public class PlayerController {
     public void moveForward() {
         Room nextRoom = currentRoom.getRoomAt(currentDirection);
         if (nextRoom == null || nextRoom.isOccupied()) {
-            System.out.println("Cannot move forward");
-        } else {
-            currentRoom.leave();
-            currentRoom = nextRoom;
-            currentRoom.visit();
-            currentRoom.occupy();
-            System.out.println("X: " + currentRoom.col + " Y: " + currentRoom.row);
+            return ;
         }
+
+        currentRoom.leave();
+        currentRoom = nextRoom;
+        currentRoom.visit();
+        currentRoom.occupy();
+        System.out.println("row: " + currentRoom.row + " col: " + currentRoom.col);
+
     }
-    public void attack() {
-        if(facingWall()) return;
-
-        if(!facingEnemy()) return;
-
-        AbstractEnemy enemy = currentRoom.getRoomAt(currentDirection).getEnemy();
-
-        enemy.takeDamage(player.weaponAttack());
-
-        if(!enemy.isAlive()) {
-            player.addXP(enemy.giveEXP());
-            Room room = enemy.getRoom();
-            enemy.setRoom(null);
-            room.setEnemy(null);
-        }
-
+    public void getEXP(int exp){
+        player.addXP(exp);
+    }
+    public void attack(EnemyController enemyController) {
+        enemyController.takeDamage(player.weaponAttack());
     }
     public void spell(){
         if(facingWall()) return;
@@ -100,7 +88,7 @@ public class PlayerController {
         }
     }
 
-    private boolean facingEnemy(){
+    public boolean facingEnemy(){
         if(facingWall()) return false;
         AbstractEnemy enemy = currentRoom.getRoomAt(currentDirection).getEnemy();
         if(enemy == null){
@@ -118,6 +106,9 @@ public class PlayerController {
     }
 
 
+    public Room getFacingRoom(){
+        return currentRoom.getRoomAt(currentDirection);
+    }
     public Room getCurrentRoom() {
         return currentRoom;
     }

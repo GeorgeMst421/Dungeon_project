@@ -1,16 +1,26 @@
 package UI;
 
 import Interfaces.*;
+import Interfaces.EventListener;
 import Items.Consumables.*;
 import character.AbstractChars.AbstractPlayer;
 
 import javax.swing.*;
 import java.util.*;
 
-public class PlayerStatus extends JLabel {
+public class PlayerStatus extends JLabel implements EventListener {
 
     public static JLabel playerInfo;
+    private final AbstractPlayer player;
     public PlayerStatus(AbstractPlayer player){
+        this.player = player;
+        updateStatus();
+    }
+    @Override
+    public void onEvent(){
+        updateStatus();
+    }
+    public void updateStatus(){
         StringBuilder pstate = new StringBuilder("<html>");
         pstate.append(player.getName()).append("<br/>");
         pstate.append(player.getPlayerClass()).append(" / " );
@@ -51,7 +61,5 @@ public class PlayerStatus extends JLabel {
                 .append(potionStats.getOrDefault("Mana", 0))
                 .append("<br/>");
         this.setText(pstate.toString());
-
-
     }
 }

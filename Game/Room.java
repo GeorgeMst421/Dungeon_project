@@ -14,7 +14,7 @@ public class Room {
     public int col;
     private List<Item> itemsOnRoom;
     private AbstractEnemy enemy;
-    private boolean visited = false;
+    private boolean visited = true;//TODO false
     private boolean finish = false;
     private boolean occupied = false;
     public Room(int row, int col){

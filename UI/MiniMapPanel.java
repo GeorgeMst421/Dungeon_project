@@ -1,11 +1,13 @@
 package UI;
 
+import Enemy.AbstractEnemy;
 import Enums.Direction;
 import Game.GameMap;
 import Game.Room;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 public class MiniMapPanel extends JPanel {
 
@@ -16,7 +18,7 @@ public class MiniMapPanel extends JPanel {
 
     public MiniMapPanel(GameMap map, Room curRoom) {
         this.map = map;
-        this.curRoom = map.map[23][23]; //TODO [0][0]
+        this.curRoom = map.getStartingRoom();
         this.d = Direction.SOUTH;
 
     }
@@ -42,6 +44,7 @@ public class MiniMapPanel extends JPanel {
         final int roomCountHeight = map.getMapHeight(); // Room count in height
         final int tileWidth = mapPixelWidth / roomCountWidth;
         final int tileHeight = mapPixelHeight / roomCountHeight;
+        Map<Room, AbstractEnemy> enemyPositions = map.getEnemyPositions();
 
         // Filling the whole component with black color
         g.setColor(Color.BLACK);
@@ -79,6 +82,13 @@ public class MiniMapPanel extends JPanel {
                         g.fillRect(offs + col*tileWidth, offs+row*tileHeight,
                                 2, tileHeight);
                     }
+                }
+                // If there's an enemy in this room, paint a red dot over it
+                if (enemyPositions.containsKey(room)) {
+                    g.setColor(Color.BLUE);
+                    int enemyCenterX = offs + col*tileWidth + tileWidth/2;
+                    int enemyCenterY = offs + row*tileHeight + tileHeight/2;
+                    g.fillOval(enemyCenterX, enemyCenterY, tileWidth / 4, tileHeight / 4);
                 }
                 if(room == curRoom) {
                     g.setColor(dColor);

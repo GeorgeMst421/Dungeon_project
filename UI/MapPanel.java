@@ -26,11 +26,14 @@ public class MapPanel extends JPanel {
     public MapPanel(PlayerController playerController, GameMap gameMap) {
         setPreferredSize(new Dimension(width, height));
         wallImages = readImages();
-        currentRoom = null;
         this.playerController = playerController;
         this.gameMap = gameMap;
+        currentRoom = playerController.getCurrentRoom();
+        setCurrentRoom(currentRoom);
     }
-
+    public void setGameMap(GameMap gameMap){
+        this.gameMap = gameMap;
+    }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

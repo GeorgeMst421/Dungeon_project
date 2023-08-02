@@ -1,49 +1,61 @@
 package Game.Controllers;
 
 import Enemy.AbstractEnemy;
-import Game.GameMap;
-import Game.Room;
+import Enums.DamageType;
+import Game.*;
 
 import java.util.*;
 
-public class EnemiesController {
-    private List<AbstractEnemy> enemies;
-    private GameMap gameMap;
-    private final PlayerController playerController;
+public class EnemyController {
+    private final AbstractEnemy enemy;
+    private final GameMap gameMap;
+    private Room currentRoom;
 
-    public EnemiesController(GameMap gameMap, PlayerController playerController) {
-        this.enemies = new ArrayList<>();
-        this.gameMap = gameMap;
-        this.playerController = playerController;
+    public EnemyController(AbstractEnemy enemy, GameMap map, Room currentRoom) {
+        this.enemy = enemy;
+        this.gameMap = map;
+        this.currentRoom = currentRoom;
+    }
+    public int giveEXP(){
+        return enemy.giveEXP();
+    }
+    public Room getRoom(){return currentRoom;}
+
+    public void takeDamage(Map<DamageType, Integer> damageTypeIntegerMap){
+        enemy.takeDamage(damageTypeIntegerMap);
+    }
+    public void attackPlayer(){
+
     }
 
-    public void addEnemy(AbstractEnemy enemy){
-        this.enemies.add(enemy);
+    public boolean isDead(){
+        if(enemy.isDead()){
+            currentRoom.setEnemy(null);
+            currentRoom.leave();
+            currentRoom = null;
+            return true;
+        }
+        return false;
     }
-
-    public List<AbstractEnemy> getEnemies(){
-        return enemies;
-    }
-    public void moveEnemiesTowardsPlayer() {
-        for(AbstractEnemy enemy : enemies) {
-            Room start = enemy.getRoom();
+    public void moveEnemyTowardsPlayer(PlayerController playerController) {
+            Room start = currentRoom;
             Room goal = playerController.getCurrentRoom();
 
             List<Room> cameFrom = breadthFirstSearch(start, goal);
 
-            if (cameFrom == null) {
-                System.out.println("No path to player found.");
-                return;
-            }
-
             // Get the next room in the path towards the player
             Room nextRoom = getNextRoomInPath(start, goal, cameFrom);
 
-            if (nextRoom != null) {
-                // Only move the enemy if there is a next room
-                enemy.setRoom(nextRoom);
+            if (nextRoom != null && !nextRoom.isOccupied()) {
+                // Only move the enemy if there is a next room and it is not occupied
+                currentRoom.leave();
+                currentRoom.setEnemy(null);
+                currentRoom = nextRoom;
+                currentRoom.setEnemy(enemy);
+                currentRoom.occupy();
             }
-        }
+
+            Game.log("Enemy moved to "+ currentRoom.row + "  " + currentRoom.col);
     }
 
     private List<Room> breadthFirstSearch(Room start, Room goal) {
@@ -62,7 +74,7 @@ public class EnemiesController {
             visited.add(start);
             while(currentRoom.current != goal) {
                 currentRoom = scanRooms.removeLast();
-                for(Room n: gameMap.getNeighbors(currentRoom.current)) {
+                for(Room n: gameMap.getConnectedNeighbors(currentRoom.current)) {
                     if(! visited.contains(n)) {
                         visited.add(n);
                         scanRooms.addFirst(new RoomPath(n, currentRoom));

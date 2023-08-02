@@ -1,6 +1,7 @@
 package character.AbstractChars;
 
 import Enums.*;
+import Game.Dice;
 import Items.ItemEffect;
 import Interfaces.*;
 import Items.Weapons.*;
@@ -22,15 +23,19 @@ public abstract class AbstractPlayer {
     public AbstractPlayer(){
         equipedItems = new HashMap<>();
         inventory = new ArrayList<>();
+        equip(SlotType.MAIN_HAND,new PlayerWeapon("SimpleMace","A plain mace",
+                List.of(new Damage(DamageType.BLUNT,new Dice(1,6),0)),
+                List.of(new ItemEffect(EffectType.STR_BOOST,1)), SlotType.MAIN_HAND)
+        );
     }
 
     public Map<DamageType, Integer> weaponAttack(){
 
         Map<DamageType, Integer> finalDamages = ((PlayerWeapon) equipedItems.get(SlotType.MAIN_HAND)).hit();
 
-        finalDamages.put(DamageType.SLASHING, finalDamages.get(DamageType.SLASHING) + strength);
-        finalDamages.put(DamageType.BLUNT, finalDamages.get(DamageType.BLUNT) + strength);
-        finalDamages.put(DamageType.MAGICAL, finalDamages.get(DamageType.MAGICAL) + intelligence);
+        finalDamages.put(DamageType.SLASHING, finalDamages.getOrDefault(DamageType.SLASHING,0) + strength);
+        finalDamages.put(DamageType.BLUNT, finalDamages.getOrDefault(DamageType.BLUNT,0) + strength);
+        finalDamages.put(DamageType.MAGICAL, finalDamages.getOrDefault(DamageType.MAGICAL, 0) + intelligence);
 
         return finalDamages;
     }

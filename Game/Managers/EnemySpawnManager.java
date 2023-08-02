@@ -1,43 +1,103 @@
 package Game.Managers;
 
-import Enemy.AbstractEnemy;
-import Game.Controllers.EnemiesController;
+import Enemy.*;
+import Game.Controllers.EnemyController;
+import Game.Game;
+import Game.GameMap;
 import Game.Room;
+import character.AbstractChars.AbstractPlayer;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class EnemySpawnManager {
-    private List<Room> spawnPoints;
-    private List<AbstractEnemy> enemyTypes;
-    private EnemiesController enemiesController;
+    private final AbstractPlayer player;
+    private GameMap gameMap;
 
-    public EnemySpawnManager(List<Room> spawnPoints, List<AbstractEnemy> enemyTypes, EnemiesController enemiesController) {
-        this.spawnPoints = spawnPoints;
-        this.enemyTypes = enemyTypes;
-        this.enemiesController = enemiesController;
+    public EnemySpawnManager(AbstractPlayer player, GameMap gameMap) {
+        this.player = player;
+        this.gameMap = gameMap;
     }
 
-    public void spawnEnemy() {
-        if (enemyTypes.isEmpty()) {
-            return;
+    public void setGameMap(GameMap gameMap){
+        this.gameMap = gameMap;
+    }
+
+    public List<EnemyController> spawnEnemies(){
+        List<AbstractEnemy> enemiesToSpawn =  generateEnemies();
+        List<Room> spawnPoints = gameMap.getEmptyRooms();
+        if (enemiesToSpawn.isEmpty()) {
+            return null;
+        }
+        List<EnemyController> enemyControllers = new ArrayList<>();
+        while (!enemiesToSpawn.isEmpty()){
+            // Select a random spawn point from the list
+            Room spawnPoint = spawnPoints.get(new Random().nextInt(spawnPoints.size()));
+
+            // Select a random enemy type from the list
+            AbstractEnemy enemy = enemiesToSpawn.get(new Random().nextInt(enemiesToSpawn.size()));
+
+            //Spawn it
+            spawnPoint.setEnemy(enemy);
+            spawnPoint.occupy();
+            System.out.println("Enemy spawned at " + spawnPoint.col + spawnPoint.row);
+
+            enemyControllers.add(new EnemyController(enemy, gameMap, spawnPoint));
+            // Remove enemy from the list
+            enemiesToSpawn.remove(enemy);
         }
 
-        // Select a random spawn point from the list
-        Room spawnPoint = spawnPoints.get(new Random().nextInt(spawnPoints.size()));
+        return enemyControllers;
+    }
 
-        // Select a random enemy type from the list
-        AbstractEnemy enemy = enemyTypes.get(new Random().nextInt(enemyTypes.size()));
+     private List<AbstractEnemy> generateEnemies() {
+         List<AbstractEnemy> enemiesToSpawn = new ArrayList<>();
+         Random rng = new Random();
 
-        //Spawn it
-        spawnPoint.setEnemy(enemy);
-        spawnPoint.occupy();
-        enemy.setRoom(spawnPoint);
+        for (int i = 0; i < Game.ENEMIES_PER_MAP; i++) {
+            switch (player.getLevel()) {
+                case 1 -> {
+                    enemiesToSpawn.add(new Slime());
+                }
+                case 2 -> {
+                    if (rng.nextBoolean()) {
+                        enemiesToSpawn.add(new Slime());
+                    } else {
+                        enemiesToSpawn.add(new Goblin());
+                    }
+                }
+                case 3 -> {
+                    int random = rng.nextInt(2);
+                    if (random == 0) enemiesToSpawn.add(new Goblin());
+                    else enemiesToSpawn.add(new Ghost());
+                }
+                case 4 -> {
+                    int random = rng.nextInt(3);
+                    if (random == 0) enemiesToSpawn.add(new Goblin());
+                    else if (random == 1) enemiesToSpawn.add(new Ghost());
+                    else enemiesToSpawn.add(new Skeleton());
+                }
+                case 5 -> {
+                    int random = rng.nextInt(4);
+                    if (random == 0) enemiesToSpawn.add(new Ghost());
+                    else if (random == 1) enemiesToSpawn.add(new Skeleton());
+                    else if (random == 2) enemiesToSpawn.add(new SkDemon());
+                    else enemiesToSpawn.add(new SkLord());
+                }
+                case 6 -> {
+                    int random = rng.nextInt(3);
+                    if (random == 0) enemiesToSpawn.add(new Skeleton());
+                    else if (random == 1) enemiesToSpawn.add(new SkDemon());
+                    else enemiesToSpawn.add(new SkLord());
+                }
+                default -> throw new IllegalStateException("Player level exceeds maximum level.");
+            }
+            System.out.println("enemy added to enemiesToSpawn List");
+        }
 
-        // Add the enemy to EnemiesController's list
-        enemiesController.addEnemy(enemy);
-
-        // Remove enemy from the list
-        enemyTypes.remove(enemy);
+        if (Game.mapCounter == Game.NUMBER_OF_MAPS) {
+            enemiesToSpawn.clear();
+            enemiesToSpawn.add(new Leoric());
+        }
+        return enemiesToSpawn;
     }
 }
