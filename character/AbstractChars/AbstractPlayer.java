@@ -39,6 +39,10 @@ public abstract class AbstractPlayer {
 
         return finalDamages;
     }
+    //TODO takeDamage()
+    public void takeDamage(Map<DamageType, Integer> damageMap){
+
+    }
     public void addXP(int exp) {
         experiencePoints += exp;
         while (true) {

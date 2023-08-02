@@ -8,7 +8,9 @@ import character.AbstractChars.AbstractPlayer;
 import javax.swing.*;
 import java.util.*;
 
-public class PlayerStatus extends JLabel implements EventListener {
+public class PlayerStatus extends JLabel  {
+
+    private final List<EventListener> listeners = new ArrayList<>();
 
     public static JLabel playerInfo;
     private final AbstractPlayer player;
@@ -16,10 +18,7 @@ public class PlayerStatus extends JLabel implements EventListener {
         this.player = player;
         updateStatus();
     }
-    @Override
-    public void onEvent(){
-        updateStatus();
-    }
+
     public void updateStatus(){
         StringBuilder pstate = new StringBuilder("<html>");
         pstate.append(player.getName()).append("<br/>");
@@ -61,5 +60,8 @@ public class PlayerStatus extends JLabel implements EventListener {
                 .append(potionStats.getOrDefault("Mana", 0))
                 .append("<br/>");
         this.setText(pstate.toString());
+    }
+    public void addEventListener(EventListener listener) {
+        listeners.add(listener);
     }
 }

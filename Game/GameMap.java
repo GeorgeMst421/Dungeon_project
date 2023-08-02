@@ -41,7 +41,7 @@ public class GameMap {
         return enemyPositions;
     }
 
-    public Set<Room> getConnectedNeighbors(Room r) {
+    public static Set<Room> getConnectedNeighbors(Room r) {
         Set<Room> neighborSet = new HashSet<>();
 
         if (r.getRoomAt(Direction.NORTH) != null) neighborSet.add(r.getRoomAt(Direction.NORTH));

@@ -46,6 +46,9 @@ public class PlayerController {
     public void attack(EnemyController enemyController) {
         enemyController.takeDamage(player.weaponAttack());
     }
+    public void takeDamage(){
+        player.
+    }
     public void spell(){
         if(facingWall()) return;
 

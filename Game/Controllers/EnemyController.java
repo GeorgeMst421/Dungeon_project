@@ -3,6 +3,7 @@ package Game.Controllers;
 import Enemy.AbstractEnemy;
 import Enums.DamageType;
 import Game.*;
+import Items.ItemGenerator;
 
 import java.util.*;
 
@@ -24,12 +25,14 @@ public class EnemyController {
     public void takeDamage(Map<DamageType, Integer> damageTypeIntegerMap){
         enemy.takeDamage(damageTypeIntegerMap);
     }
-    public void attackPlayer(){
+    public void attackPlayer(PlayerController playerController){
 
+        playerController.takeDamage(enemy.attack());
     }
 
     public boolean isDead(){
         if(enemy.isDead()){
+            currentRoom.getItemsOnRoom().add(ItemGenerator.randomEquippable());
             currentRoom.setEnemy(null);
             currentRoom.leave();
             currentRoom = null;

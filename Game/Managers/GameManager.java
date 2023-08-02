@@ -34,7 +34,7 @@ public class GameManager implements EventListener {
         mapPanel = new MapPanel(playerController,gameMap);
         miniMapPanel = new MiniMapPanel(gameMap,playerController.getCurrentRoom());
         playerStatus = new PlayerStatus(player);
-        enemyTurnManager.addEventListener(playerStatus);
+        playerStatus.addEventListener(this);
         spawnNewEnemies();
 
     }
@@ -84,6 +84,7 @@ public class GameManager implements EventListener {
                         Game.log("Enemy died");
                         playerController.getEXP(enemyController.giveEXP());
                         Game.log("Got " + enemyController.giveEXP() + " exp");
+                        
                     }
                 }
 
@@ -134,6 +135,7 @@ public class GameManager implements EventListener {
     @Override
     public void onEvent() {
         updateMap();
+        playerStatus.updateStatus();
     }
 
     private void updateMap(){

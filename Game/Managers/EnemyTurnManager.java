@@ -1,13 +1,15 @@
 package Game.Managers;
 
-import Enemy.AbstractEnemy;
-import Game.Controllers.PlayerController;
-import Game.Controllers.EnemyController;
+import Game.Controllers.*;
 import Game.GameMap;
+import Game.Room;
 import Interfaces.EventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EnemyTurnManager {
     private final List<EventListener> listeners = new ArrayList<>();
@@ -21,9 +23,19 @@ public class EnemyTurnManager {
 
 
     public void enemyTurn() {
-        if(enemyControllers.isEmpty()) System.out.println("Empty");
+        Room playerRoom = playerController.getCurrentRoom();
+
         for(EnemyController enemyController: enemyControllers) {
-            enemyController.moveEnemyTowardsPlayer(playerController);
+            Optional<Room> optionalPlayerRoom = GameMap.getConnectedNeighbors(enemyController.getRoom()).stream().
+                    filter(r -> r == playerRoom).
+                    findFirst();
+            if(optionalPlayerRoom.isEmpty()){
+                enemyController.moveEnemyTowardsPlayer(playerController);
+            }
+            else{
+                enemyController.attackPlayer(playerController);
+            }
+
         }
 
         for (EventListener listener : listeners) {
