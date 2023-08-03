@@ -1,6 +1,7 @@
 package Items.Weapons;
 
 import Enums.DamageType;
+import Enums.SlotType;
 import Items.AbstractItem;
 
 import java.util.*;
@@ -22,6 +23,7 @@ public abstract class AbstractWeapon extends AbstractItem{
         }
         return results;
     }
+
 }
 
 //    private final Dice dice;
@@ -41,7 +43,4 @@ public abstract class AbstractWeapon extends AbstractItem{
 //        return dice.Roll(diceBonus);
 //    }
 //
-//    @Override
-//    public String toString(){
-//        return name + "" + description + " DamageType: " + getDamageType();
-//    }
+

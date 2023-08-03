@@ -22,7 +22,7 @@ public class Slime extends AbstractEnemy{
     }
 
     @Override
-    protected int calculateDamageTaken(DamageType dmgType, int dmg) {
+    protected int calculateDamageByType(DamageType dmgType, int dmg) {
         if( dmgType == DamageType.SLASHING) return 0; //immune to slashing
         return dmg;
     }

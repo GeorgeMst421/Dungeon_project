@@ -20,4 +20,9 @@ public abstract class AbstractItem implements Item {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public String toString(){
+        return getName() + " " + getDescription();
+    }
 }

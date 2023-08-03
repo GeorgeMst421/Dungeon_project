@@ -30,11 +30,10 @@ public class EnemySpawnManager {
         Room spawnPoint = spawnPoints.get(new Random().nextInt(spawnPoints.size()));
         spawnPoint.setEnemy(enemy);
         spawnPoint.occupy();
-        System.out.println("Enemy spawned at " + spawnPoint.col + spawnPoint.row);
         return new EnemyController(enemy, gameMap, spawnPoint);
     }
     private AbstractEnemy generateEnemy() {
-        AbstractEnemy enemy;
+        AbstractEnemy enemy = null;
         RandomGenerator rng = new Random();
         switch (player.getLevel()) {
             case 1 -> {
@@ -71,10 +70,8 @@ public class EnemySpawnManager {
                 else if (random == 1) enemy = (new SkDemon());
                 else enemy = (new SkLord());
             }
-            default -> throw new IllegalStateException("Player level exceeds maximum level.");
         }
-        System.out.println("enemy added to enemiesToSpawn List");
-        if (Game.mapCounter == Game.NUMBER_OF_MAPS) {
+        if (Game.isFinalRound()) {
             enemy = (new Leoric());
         }
         return enemy;

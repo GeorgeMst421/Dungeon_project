@@ -78,10 +78,7 @@ public class ItemGenerator {
                 .length)];
         SlotType slotType = SlotType.values()[rng.nextInt(SlotType
                 .values().length)];
-        boolean isWeapon = false;
-        if (slotType == SlotType.MAIN_HAND || slotType == SlotType.OFF_HAND) {
-            isWeapon = true;
-        }
+        boolean isWeapon = slotType == SlotType.MAIN_HAND || slotType == SlotType.OFF_HAND;
         String itemName = nameGenerator(rarity, slotType);
 // we have to split the bonus points of the item into 1-3 of the possible bint totalBonus = rarity.totalBonus;
 // HP_BONUS, MP_BONUS, STR_BONUS, INT_BONUS
@@ -108,7 +105,7 @@ public class ItemGenerator {
                 weaponDamages.add(new Damage(dmgType, dice, bonus));
             }
 // I always use simple names for the variable "name" for example name = "PlayerWeapon". The variable itemName is actually the description of the weapon
-            return new PlayerWeapon("PlayerWeapon", itemName, weaponDamages, itemBonuses, slotType);
+            return new PlayerWeapon(slotType.name(), itemName, weaponDamages, itemBonuses, slotType);
         } else {
             return new Equippable() {
                 @Override
@@ -140,6 +137,8 @@ public class ItemGenerator {
                 public List<ItemEffect> getItemEffects() {
                     return itemBonuses;
                 }
+                @Override
+                public String toString(){ return getName()+ " " + getDescription();}
             };
         }
     }

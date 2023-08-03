@@ -14,7 +14,7 @@ public abstract class AbstractPlayer {
     protected String name;
     protected int baseHP, baseMP, baseStr, baseInt, strength, intelligence;
     protected int maxHP,currentHP,maxMP,currentMP;
-    protected int experiencePoints=0,level=0;
+    protected int experiencePoints=0,level=1;
     protected Map<Integer, Integer> bonusHP, bonusMP, bonusStr, bonusInt;
     public Map<DamageType, Integer> defenses;
     public Map<SlotType, Equippable> equipedItems;
@@ -33,15 +33,28 @@ public abstract class AbstractPlayer {
 
         Map<DamageType, Integer> finalDamages = ((PlayerWeapon) equipedItems.get(SlotType.MAIN_HAND)).hit();
 
-        finalDamages.put(DamageType.SLASHING, finalDamages.getOrDefault(DamageType.SLASHING,0) + strength);
-        finalDamages.put(DamageType.BLUNT, finalDamages.getOrDefault(DamageType.BLUNT,0) + strength);
-        finalDamages.put(DamageType.MAGICAL, finalDamages.getOrDefault(DamageType.MAGICAL, 0) + intelligence);
+        for(Map.Entry<DamageType, Integer> entry : finalDamages.entrySet()){
+            DamageType dmgType = entry.getKey();
+            int weaponDmg = entry.getValue();
+            if(dmgType == DamageType.MAGICAL)
+                entry.setValue(weaponDmg + intelligence);
+            else
+                entry.setValue(weaponDmg + strength);
+        }
 
         return finalDamages;
     }
-    //TODO takeDamage()
-    public void takeDamage(Map<DamageType, Integer> damageMap){
-
+    //TODO takeDamage() might not be ok
+    public int calculateFinalDamage(Map<DamageType, Integer> damageMap){
+        int finalDamage=0;
+        for(Map.Entry<DamageType, Integer> entry : damageMap.entrySet()){
+            DamageType dmgType = entry.getKey();
+            finalDamage +=  damageMap.get(dmgType) - defenses.getOrDefault(dmgType,0);
+        }
+        return finalDamage;
+    }
+    public void takeDamage(int dmg){
+        currentHP -= dmg;
     }
     public void addXP(int exp) {
         experiencePoints += exp;
@@ -136,29 +149,28 @@ public abstract class AbstractPlayer {
     }
     public <T extends Consumable> List<T> getConsumableItems(Class<T> type) {
         return inventory.stream()
-                .filter(item -> type.isInstance(item) && item.getUsesLeft() > 0)
+                .filter(type::isInstance)
                 .map(item -> (T) item)
                 .collect(Collectors.toList());
     }
 
     public void useItem(Consumable item){
-        if(!inventory.contains(item)) return;
-        if(item.getUsesLeft() == 0) return;
+        item.use();// Decrement its uses
 
-        item.use();
         var effects = item.getItemEffects();
-        for(ItemEffect effect: effects){
+        for (ItemEffect effect: effects){
             switch (effect.getEffectType()){
                 case HP_REPLENISH -> {
                     currentHP += effect.getAmount();
-                    if(currentHP>maxHP) currentHP = maxHP;
+                    if (currentHP > maxHP) currentHP = maxHP;
                 }
                 case MP_REPLENISH -> {
                     currentMP += effect.getAmount();
-                    if(currentMP>maxMP) currentMP = maxMP;
+                    if (currentMP > maxMP) currentMP = maxMP;
                 }
             }
         }
+        if(item.getUsesLeft() == 0) inventory.remove(item);
     }
     public void pickItem(Consumable i){
         inventory.add(i);

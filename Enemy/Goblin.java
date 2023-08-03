@@ -21,7 +21,7 @@ public class Goblin extends AbstractEnemy{
         );
     }
     @Override
-    protected int calculateDamageTaken(DamageType dmgType, int dmg) {
+    protected int calculateDamageByType(DamageType dmgType, int dmg) {
         if( dmgType == DamageType.SLASHING) return dmg/2;
         return dmg;
     }

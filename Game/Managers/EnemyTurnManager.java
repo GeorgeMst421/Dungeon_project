@@ -1,15 +1,12 @@
 package Game.Managers;
 
 import Game.Controllers.*;
-import Game.GameMap;
-import Game.Room;
+import Game.*;
 import Interfaces.EventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EnemyTurnManager {
     private final List<EventListener> listeners = new ArrayList<>();
@@ -41,7 +38,7 @@ public class EnemyTurnManager {
         for (EventListener listener : listeners) {
             listener.onEvent();
         }
-
+        Game.log("");
     }
 
     public void addEventListener(EventListener listener) {

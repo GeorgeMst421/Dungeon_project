@@ -29,6 +29,9 @@ public class InputHandler implements KeyListener {
             case 'm' -> Command.MANA_POTION;
             case 'r' -> Command.REST;
             case 'c' -> Command.SPELL;
+            case 'p' -> Command.PICK_UP;
+            case 'y' -> Command.YES;
+            case 'n' -> Command.NO;
             default  -> Command.NO_ACTION;
         };
     }

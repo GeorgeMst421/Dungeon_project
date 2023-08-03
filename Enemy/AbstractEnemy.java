@@ -1,7 +1,6 @@
 package Enemy;
 
 import Enums.DamageType;
-import Game.Room;
 import Items.Weapons.*;
 
 import java.awt.*;
@@ -19,7 +18,7 @@ public abstract class AbstractEnemy {
         enemyWeapon = wp;
     }
 
-    protected abstract int calculateDamageTaken(DamageType dmgType, int dmg);
+    protected abstract int calculateDamageByType(DamageType dmgType, int dmg);
 
     public abstract int giveEXP();
 
@@ -29,16 +28,18 @@ public abstract class AbstractEnemy {
         return enemyWeapon.hit();
     }
 
-    public void takeDamage(Map<DamageType, Integer> damages) {
+    public int calculateFinalDamage(Map<DamageType, Integer> damages) {
+        int finalDamage = 0;
         for (Map.Entry<DamageType, Integer> entry : damages.entrySet()) {
             DamageType dmgType = entry.getKey();
             int dmg = entry.getValue();
-            int dmgTaken = calculateDamageTaken(dmgType, dmg);
-            hitPoints -= dmgTaken;
+            finalDamage += calculateDamageByType(dmgType, dmg);
         }
-
+        return finalDamage;
     }
-
+    public void takeDamage(int damage){
+        hitPoints -= damage;
+    }
     public boolean isDead() {
         return hitPoints <= 0;
     }

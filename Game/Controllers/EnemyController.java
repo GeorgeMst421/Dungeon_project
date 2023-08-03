@@ -3,6 +3,10 @@ package Game.Controllers;
 import Enemy.AbstractEnemy;
 import Enums.DamageType;
 import Game.*;
+import Interfaces.Equippable;
+import Interfaces.Item;
+import Items.Consumables.HealthPotion;
+import Items.Consumables.ManaPotion;
 import Items.ItemGenerator;
 
 import java.util.*;
@@ -17,22 +21,24 @@ public class EnemyController {
         this.gameMap = map;
         this.currentRoom = currentRoom;
     }
-    public int giveEXP(){
-        return enemy.giveEXP();
-    }
-    public Room getRoom(){return currentRoom;}
 
-    public void takeDamage(Map<DamageType, Integer> damageTypeIntegerMap){
-        enemy.takeDamage(damageTypeIntegerMap);
-    }
     public void attackPlayer(PlayerController playerController){
-
-//        playerController.takeDamage(enemy.attack());
+        playerController.takeDamage(enemy.attack());
     }
-
+    public void takeDamage(Map<DamageType, Integer> damageTypeIntegerMap){
+        int dmg = enemy.calculateFinalDamage(damageTypeIntegerMap);
+        enemy.takeDamage(dmg);
+        Game.log("You hit "+ enemy.getName()+ " for " + dmg + " damage!");
+    }
     public boolean isDead(){
         if(enemy.isDead()){
-            currentRoom.getItemsOnRoom().add(ItemGenerator.randomEquippable());
+            Item drop = generateDropItem();
+            Game.log(enemy.getName() + " died. Got "+ enemy.giveEXP()+ " exp");
+            if(drop != null) {
+                currentRoom.getItemsOnRoom().add(drop);
+                Game.log(enemy.getName() + " dropped " + drop.getName() + " " + drop.getDescription());
+            }
+            Game.log("");
             currentRoom.setEnemy(null);
             currentRoom.leave();
             currentRoom = null;
@@ -40,6 +46,16 @@ public class EnemyController {
         }
         return false;
     }
+    private Item generateDropItem(){
+        Random rng = new Random();
+        int n = rng.nextInt(0,101);
+        Item drop = null;
+        if (n > 70) drop = ItemGenerator.randomEquippable();
+        else if (n > 50) drop = new HealthPotion();
+        else if (n > 40) drop = new ManaPotion();
+        return drop;
+    }
+
     public void moveEnemyTowardsPlayer(PlayerController playerController) {
             Room start = currentRoom;
             Room goal = playerController.getCurrentRoom();
@@ -56,9 +72,8 @@ public class EnemyController {
                 currentRoom = nextRoom;
                 currentRoom.setEnemy(enemy);
                 currentRoom.occupy();
+                Game.log(enemy.getName() + " moved to Room["+ currentRoom.row + ", " + currentRoom.col+"]");
             }
-
-            Game.log("Enemy moved to "+ currentRoom.row + "  " + currentRoom.col);
     }
 
     private List<Room> breadthFirstSearch(Room start, Room goal) {
@@ -77,7 +92,7 @@ public class EnemyController {
             visited.add(start);
             while(currentRoom.current != goal) {
                 currentRoom = scanRooms.removeLast();
-                for(Room n: gameMap.getConnectedNeighbors(currentRoom.current)) {
+                for(Room n: GameMap.getConnectedNeighbors(currentRoom.current)) { //TODO IF ERROR CHANGE FROM STATIC
                     if(! visited.contains(n)) {
                         visited.add(n);
                         scanRooms.addFirst(new RoomPath(n, currentRoom));
@@ -91,9 +106,6 @@ public class EnemyController {
             }
             return path;
     }
-
-
-
     private Room getNextRoomInPath(Room start, Room goal, List<Room> cameFrom) {
         // The path starts with the start room and ends with the goal room.
         // Therefore, the next room in the path towards the goal is the second room in the list.
@@ -105,6 +117,9 @@ public class EnemyController {
             return null;
         }
     }
-
+    public int giveEXP(){
+        return enemy.giveEXP();
+    }
+    public Room getRoom(){return currentRoom;}
 
 }

@@ -63,15 +63,20 @@ public class MapPanel extends JPanel {
     void paintMap(Room r, Direction d, Map<Room, AbstractEnemy> enemyLocations, Graphics g) throws IOException {
         BufferedImage b = getImage(r, d);
         Room rn = r.getRoomAt(d);
-        if(enemyLocations.get(rn) != null) {
-            paintEnemyClose(b, enemyLocations.get(rn));
+
+        if (rn != null) {
+            if(enemyLocations.get(rn) != null) {
+                paintEnemyClose(b, enemyLocations.get(rn));
+            }
             Room rnn = rn.getRoomAt(d);
-            if(enemyLocations.get(rnn) != null) {
-                paintEnemyFar(b, enemyLocations.get(rn));
+            if(rnn != null && enemyLocations.get(rnn) != null) {
+                paintEnemyFar(b, enemyLocations.get(rnn));
             }
         }
+
         g.drawImage(b, 0, 0, null);
     }
+
 
     // Images for drawing
     Map<String, BufferedImage> readImages() {
@@ -176,4 +181,5 @@ public class MapPanel extends JPanel {
     public void setCurrentRoom(Room room){
         currentRoom = room;
     }
+
 }

@@ -3,12 +3,15 @@ package Game.Controllers;
 import Enemy.*;
 import Enums.*;
 import Game.*;
+import Interfaces.Equippable;
+import Interfaces.Item;
 import Items.Consumables.*;
 import character.AbstractChars.*;
 
 import java.util.*;
 
 public class PlayerController {
+
     private final AbstractPlayer player;
     private Room currentRoom;
     private Direction currentDirection;
@@ -17,59 +20,65 @@ public class PlayerController {
         this.currentDirection = Direction.SOUTH;
         this.player = player;
     }
+    public void attack(EnemyController enemyController) {
+        enemyController.takeDamage(player.weaponAttack());
+    }
+    public void takeDamage(Map<DamageType, Integer> damageTypeIntegerMap){
+        int dmg = player.calculateFinalDamage(damageTypeIntegerMap);
+        player.takeDamage(dmg);
+        Game.log("You have taken "+ dmg + " damage!");
+    }
+    public void spell(EnemyController enemyController){
+        if(player instanceof AbstractWarrior){
+            Game.log("You can't cast spells");
+            return;
+        }
+
+        Game.log("Casting Fireball!");
+        Map<DamageType, Integer> damage;
+        if(player instanceof AbstractMage){
+            damage = ((AbstractMage) player).castSpell();
+        }
+        else{
+            damage = ((AbstractBattleMage) player).castSpell();
+        }
+        enemyController.takeDamage(damage);
+
+
+    }
+    public void moveForward() {
+        currentRoom.leave();
+        currentRoom = currentRoom.getRoomAt(currentDirection);;
+        currentRoom.visit();
+        currentRoom.occupy();
+
+        showItemsOnRoom();
+    }
     public void turnLeft() {
         currentDirection = currentDirection.left();
-        System.out.println("I turned left");
     }
 
     public void turnRight() {
         currentDirection = currentDirection.right();
-        System.out.println("I turned right");;
     }
 
-    public void moveForward() {
-        Room nextRoom = currentRoom.getRoomAt(currentDirection);
-        if (nextRoom == null || nextRoom.isOccupied()) {
-            return ;
+
+    private void showItemsOnRoom(){
+        List<Item> roomItems = currentRoom.getItemsOnRoom();
+        if (!roomItems.isEmpty()){
+            if (roomItems.size() == 1) Game.log("You stepped on an item");
+            else Game.log("You stepped on many Items");
+
+            for (int i = 0; i < roomItems.size(); i++){
+                Game.log(i+1 + ") " + roomItems.get(i).toString() );
+            }
         }
-
-        currentRoom.leave();
-        currentRoom = nextRoom;
-        currentRoom.visit();
-        currentRoom.occupy();
-        System.out.println("row: " + currentRoom.row + " col: " + currentRoom.col);
-
+        Game.log("");
     }
-    public void getEXP(int exp){
+    public void giveEXP(int exp){
         player.addXP(exp);
     }
-    public void attack(EnemyController enemyController) {
-        enemyController.takeDamage(player.weaponAttack());
-    }
-//    public void takeDamage(){
-//        player.
-//    }
-    public void spell(){
-        if(facingWall()) return;
 
-        AbstractEnemy enemy = currentRoom.getRoomAt(currentDirection).getEnemy(); // check the first room for enemy
-        if(enemy == null) {
-            enemy = currentRoom.getRoomAt(currentDirection).getRoomAt(currentDirection).getEnemy(); // check 2 rooms ahead for enemy
-            if( enemy == null ) return;
-        };
-
-        if(player instanceof AbstractMage){
-            Map<DamageType, Integer> damage = ((AbstractMage) player).castSpell();
-            enemy.takeDamage(damage);
-        }
-        else if(player instanceof AbstractBattleMage){
-            Map<DamageType, Integer> damage = ((AbstractBattleMage) player).castSpell();
-            enemy.takeDamage(damage);
-        }
-        else if(player instanceof AbstractWarrior){
-            System.out.println("You can't cast spells");
-        }
-    }
     public void rest(){
         player.rest();
     }
@@ -94,21 +103,15 @@ public class PlayerController {
     public boolean facingEnemy(){
         if(facingWall()) return false;
         AbstractEnemy enemy = currentRoom.getRoomAt(currentDirection).getEnemy();
-        if(enemy == null){
-            System.out.println("There is no enemy");
-            return false;
-        }
-        return true;
+        return enemy != null;
     }
     public boolean facingWall(){
-        if(currentRoom.getRoomAt(currentDirection) == null){
-            System.out.println("You are facing a wall");
-            return true;
-        }
-        return false;
+        return currentRoom.getRoomAt(currentDirection) == null;
     }
 
-
+    public Room getSecondFacingRoom(){
+        return currentRoom.getRoomAt(currentDirection).getRoomAt(currentDirection);
+    }
     public Room getFacingRoom(){
         return currentRoom.getRoomAt(currentDirection);
     }
@@ -120,6 +123,7 @@ public class PlayerController {
     }
     public void setCurrentRoom(Room room){currentRoom = room;}
     public void setCurrentDirection(Direction direction){currentDirection = direction;}
+
 
 }
 

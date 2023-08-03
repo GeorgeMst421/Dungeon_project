@@ -26,7 +26,7 @@ public class Leoric extends AbstractEnemy{
     }
 
     @Override
-    protected int calculateDamageTaken(DamageType dmgType, int dmg) {
+    protected int calculateDamageByType(DamageType dmgType, int dmg) {
         return dmg/2;
     }
     @Override

@@ -39,7 +39,6 @@ public class GameManager implements EventListener {
         miniMapPanel = new MiniMapPanel(gameMap,playerController.getCurrentRoom());
         playerStatus = new PlayerStatus(player);
         playerStatus.addEventListener(this);
-        spawnEnemies();
 
     }
 
@@ -57,8 +56,13 @@ public class GameManager implements EventListener {
     }
 
     private void spawnEnemies() {
-        while(enemyControllers.size() < 3)
-            enemyControllers.add(enemySpawnManager.spawnEnemy());
+        if(Game.isFinalRound()){
+            enemyControllers.add(enemySpawnManager.spawnEnemy()); // Adding 1 Leoric
+        }
+        else {
+            while (enemyControllers.size() < 3)
+                enemyControllers.add(enemySpawnManager.spawnEnemy());
+        }
     }
     private void nextMap() {
         // Generate a new map
@@ -83,13 +87,12 @@ public class GameManager implements EventListener {
     @Override
     public void onEvent() {
         updateMap();
-        playerStatus.updateStatus();
     }
 
     private void updateMap(){
         miniMapPanel.updateMiniMap(playerController.getCurrentRoom(), playerController.getCurrentDirection());
         mapPanel.updateRoomAndRepaint(playerController.getCurrentRoom());
-
+        playerStatus.updateStatus();
     }
 
     public MapPanel getMapPanel(){

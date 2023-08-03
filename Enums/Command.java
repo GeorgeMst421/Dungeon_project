@@ -9,7 +9,10 @@ public enum Command {
     REST, // R KEY
     HEALTH_POTION, // H KEY
     MANA_POTION, //M KEY
-
+    PICK_UP, //P
+    YES, //Y
+    NO, //N
+    EXIT,//E
     NO_ACTION
 }
 

@@ -34,6 +34,11 @@ public class PlayerWeapon extends AbstractWeapon implements Equippable {
 
     @Override
     public boolean isWeapon() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public String toString(){
+        return slotType.toString()+ " " + description;
     }
 }

@@ -22,7 +22,7 @@ public class Ghost extends AbstractEnemy{
         );
     }
     @Override
-    protected int calculateDamageTaken(DamageType dmgType, int dmg) {
+    protected int calculateDamageByType(DamageType dmgType, int dmg) {
         if( dmgType == DamageType.BLUNT) return 0;
         return dmg;
     }

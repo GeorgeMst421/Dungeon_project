@@ -16,7 +16,6 @@ import java.util.List;
 public class Game {
     public static int mapCounter = 1;
     public final static int NUMBER_OF_MAPS = 5;
-    public final static int ENEMIES_PER_MAP = 3;
     public static JTextArea logText;
 
     public static void main(String[] args){
@@ -25,8 +24,6 @@ public class Game {
         OrcMage Radagon = new OrcMage("Radagon");
 
         GameManager gameManager = new GameManager(Radagon);
-
-
         //Panels
         MapPanel mapPanel = gameManager.getMapPanel() ;
         MiniMapPanel miniMapPanel = gameManager.getMiniMapPanel();
@@ -34,10 +31,10 @@ public class Game {
 
         InputHandler inputHandler = new InputHandler(gameManager);
 
-        logText = new JTextArea(5,20);
-        logText.setEditable(false); // make it non-editable
-        JScrollPane scrollPane = new JScrollPane(logText); // add the text area to a scroll pane
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // make the vertical scroll bar always visible
+        logText = new JTextArea(10,20);
+        logText.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(logText);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         //Frame
         JFrame frame = new JFrame();
@@ -59,7 +56,9 @@ public class Game {
 
 
     }
-
+    public static boolean isFinalRound(){
+        return mapCounter == NUMBER_OF_MAPS;
+    }
     public static void log(String message) {
         logText.append(message + "\n");
         logText.setCaretPosition(logText.getDocument().getLength());
