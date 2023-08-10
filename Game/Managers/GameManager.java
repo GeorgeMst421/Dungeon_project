@@ -12,6 +12,7 @@ import java.util.*;
 
 public class GameManager implements EventListener {
     private GameMap gameMap;
+    public static GameState gameState = GameState.NORMAL;
     private final PlayerController playerController;
     private final List<EnemyController> enemyControllers = new ArrayList<>();
     private final EnemySpawnManager enemySpawnManager;

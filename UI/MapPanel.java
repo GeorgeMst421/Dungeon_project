@@ -65,14 +65,15 @@ public class MapPanel extends JPanel {
         Room rn = r.getRoomAt(d);
 
         if (rn != null) {
-            if(enemyLocations.get(rn) != null) {
-                paintEnemyClose(b, enemyLocations.get(rn));
-            }
             Room rnn = rn.getRoomAt(d);
             if(rnn != null && enemyLocations.get(rnn) != null) {
                 paintEnemyFar(b, enemyLocations.get(rnn));
             }
+            if(enemyLocations.get(rn) != null) {
+                paintEnemyClose(b, enemyLocations.get(rn));
+            }
         }
+
 
         g.drawImage(b, 0, 0, null);
     }

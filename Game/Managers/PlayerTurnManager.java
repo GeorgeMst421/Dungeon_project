@@ -16,7 +16,7 @@ public class PlayerTurnManager{
     private final List<EventListener> listeners = new ArrayList<>();
     private List<Item> itemsToPickUp;
     private int currentItemIndex = 0;
-    private GameState gameState = GameState.NORMAL;
+//    private GameState gameState = GameState.NORMAL;
     PlayerController playerController;
     List<EnemyController> enemyControllers;
 
@@ -80,7 +80,7 @@ public class PlayerTurnManager{
                     Game.log("You are facing a wall");
                     return isEnemyTurn;
                 }
-                EnemyController enemyController = null;
+                EnemyController enemyController;
                 if(playerController.facingEnemy()){
                     enemyController = enemyControllers.stream()
                             .filter(ec -> ec.getRoom() == playerController.getFacingRoom())
@@ -112,7 +112,7 @@ public class PlayerTurnManager{
                 playerController.useManaPot();
             }
             case PICK_UP -> {
-                if(gameState != GameState.NORMAL) {
+                if(GameManager.gameState != GameState.NORMAL) {
                     Game.log("You can't pick up an item right now.");
                     break;
                 }
@@ -121,13 +121,13 @@ public class PlayerTurnManager{
                     Game.log("No items to pick up in the room");
                 } else {
                     currentItemIndex = 0;
-                    gameState = GameState.PICKING_UP_ITEM;
+                    GameManager.gameState = GameState.PICKING_UP_ITEM;
                     Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO)");
                 }
                 isEnemyTurn = false;
             }
             case YES -> {
-                if(gameState != GameState.PICKING_UP_ITEM) {
+                if(GameManager.gameState != GameState.PICKING_UP_ITEM) {
                     Game.log("You can't confirm an action right now.");
                     break;
                 }
@@ -144,7 +144,7 @@ public class PlayerTurnManager{
                 isEnemyTurn = false;
             }
             case NO -> {
-                if(gameState != GameState.PICKING_UP_ITEM) {
+                if(GameManager.gameState != GameState.PICKING_UP_ITEM) {
                     Game.log("You can't cancel an action right now.");
                     break;
                 }
@@ -153,11 +153,11 @@ public class PlayerTurnManager{
                 isEnemyTurn = false;
             }
             case EXIT -> {
-                if(gameState != GameState.PICKING_UP_ITEM) {
+                if(GameManager.gameState != GameState.PICKING_UP_ITEM) {
                     Game.log("You can't exit from current action.");
                     break;
                 }
-                gameState = GameState.NORMAL;
+                GameManager.gameState = GameState.NORMAL;
                 Game.log("Exiting item pick-up.");
                 isEnemyTurn = false;
             }
