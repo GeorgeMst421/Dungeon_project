@@ -6,8 +6,7 @@ import character.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 
 public class Game {
     public static int mapCounter = 1;

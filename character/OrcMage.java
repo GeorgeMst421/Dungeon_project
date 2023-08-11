@@ -7,9 +7,6 @@ import java.util.Map;
 
 public class OrcMage extends AbstractMage {
 
-//    public Map<DamageType, Integer> defenses = Map.of( DamageType.SLASHING,1,
-//                                                DamageType.BLUNT,1,
-//                                                DamageType.MAGICAL,0);
     public OrcMage(String name){
         this.name = name;
         maxHP = currentHP = baseHP = 80;

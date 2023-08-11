@@ -6,9 +6,7 @@ import character.AbstractChars.AbstractWarrior;
 import java.util.Map;
 
 public class TaurenWarrior extends AbstractWarrior {
-//    Map<DamageType, Integer> defenses = Map.of( DamageType.SLASHING,2,
-//                                                DamageType.BLUNT,1,
-//                                                DamageType.MAGICAL,0);
+
     public TaurenWarrior(String name){
         this.name = name;
         maxHP = currentHP = baseHP = 100;

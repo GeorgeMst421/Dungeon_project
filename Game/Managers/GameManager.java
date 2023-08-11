@@ -51,7 +51,7 @@ public class GameManager implements EventListener {
         if (playerController.getCurrentRoom().isFinish()) {
             nextMap();
         }
-        if(enemyControllers.size() < 3) spawnEnemies();
+        if(enemyControllers.size() < 3 && !Game.isFinalRound()) spawnEnemies();
         if(isEnemyTurn)
             enemyTurnManager.enemyTurn();
         else onEvent();

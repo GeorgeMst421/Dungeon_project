@@ -19,7 +19,7 @@ public class PlayerStatus extends JLabel  {
     private final AbstractPlayer player;
     public PlayerStatus(AbstractPlayer player){
         this.player = player;
-        this.setPreferredSize(new Dimension(256,256));
+        this.setPreferredSize(new Dimension(320,256));
 //        this.setBorder(new EmptyBorder(0,0,0,0));
         updateStatus();
     }

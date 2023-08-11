@@ -14,8 +14,8 @@ public class HealthPotion extends AbstractItem implements Consumable {
     private final List<ItemEffect> bonusList = new ArrayList<>();
 
     public HealthPotion(){
-        super("HP potion","A potion which replenish some health");
-        ItemEffect hp_replenish = new ItemEffect(EffectType.HP_REPLENISH,30);
+        super("HP potion","Replenish some health");
+        bonusList.add(new ItemEffect(EffectType.HP_REPLENISH,30));
         uses = 2;
     }
     @Override

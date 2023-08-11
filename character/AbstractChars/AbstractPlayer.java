@@ -2,6 +2,8 @@ package character.AbstractChars;
 
 import Enums.*;
 import Game.Dice;
+import Game.Game;
+import Items.Consumables.HealthPotion;
 import Items.ItemEffect;
 import Interfaces.*;
 import Items.Weapons.*;
@@ -25,7 +27,7 @@ public abstract class AbstractPlayer {
         inventory = new ArrayList<>();
         equip(SlotType.MAIN_HAND,new PlayerWeapon("SimpleMace","A plain mace",
                 List.of(new Damage(DamageType.BLUNT,new Dice(1,6),0)),
-                List.of(new ItemEffect(EffectType.STR_BOOST,1)), SlotType.MAIN_HAND)
+                List.of(new ItemEffect(EffectType.STR_BOOST,0)), SlotType.MAIN_HAND)
         );
     }
 
@@ -44,7 +46,6 @@ public abstract class AbstractPlayer {
 
         return finalDamages;
     }
-    //TODO takeDamage() might not be ok
     public int calculateFinalDamage(Map<DamageType, Integer> damageMap){
         int finalDamage=0;
         for(Map.Entry<DamageType, Integer> entry : damageMap.entrySet()){
@@ -55,6 +56,9 @@ public abstract class AbstractPlayer {
     }
     public void takeDamage(int dmg){
         currentHP -= dmg;
+    }
+    public boolean isAlive(){
+        return currentHP > 0;
     }
     public void addXP(int exp) {
         experiencePoints += exp;
@@ -76,12 +80,12 @@ public abstract class AbstractPlayer {
             }
         }
     }
-    public void levelUP(){
+    protected void levelUP(){
         level += 1;
         getBonuses(level);
     }
 
-    void getBonuses(int level){
+    private void getBonuses(int level){
         maxHP += bonusHP.get(level);
         currentHP += bonusHP.get(level);
         maxMP += bonusMP.get(level);
@@ -124,7 +128,7 @@ public abstract class AbstractPlayer {
         return removedItem;
     }
 
-    public Equippable remove(SlotType s) {
+    private Equippable remove(SlotType s) {
 
         Equippable removedItem = equipedItems.remove(s);
 
@@ -157,7 +161,7 @@ public abstract class AbstractPlayer {
     public void useItem(Consumable item){
         item.use();// Decrement its uses
 
-        var effects = item.getItemEffects();
+        List<ItemEffect> effects = item.getItemEffects();
         for (ItemEffect effect: effects){
             switch (effect.getEffectType()){
                 case HP_REPLENISH -> {
@@ -172,14 +176,8 @@ public abstract class AbstractPlayer {
         }
         if(item.getUsesLeft() == 0) inventory.remove(item);
     }
-    public void pickItem(Consumable i){
-        inventory.add(i);
-    }
-    public void dropItem(Consumable i){
-        inventory.remove(i);
-    }
-    public void rest(){
 
+    public void rest(){
         if ((currentHP + 5) > maxHP) {
             currentHP = maxHP;
         } else {
@@ -191,7 +189,6 @@ public abstract class AbstractPlayer {
         } else {
             currentMP += 5;
         }
-
     }
     public void reduceMP(int mp){
         currentMP -= mp;

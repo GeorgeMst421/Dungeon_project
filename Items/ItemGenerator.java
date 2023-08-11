@@ -55,13 +55,12 @@ public class ItemGenerator {
         } else {
             rarityName = rarity.toString().toLowerCase() + " ";
         }
-        return new StringBuilder(rarityName)
-                .append(namePrefix[rng.nextInt(namePrefix.length)])
-                .append(" ")
-                .append(slotName)
-                .append(" ")
-                .append(nameSuffix[rng.nextInt(nameSuffix.length)])
-                .toString();
+        return rarityName +
+                namePrefix[rng.nextInt(namePrefix.length)] +
+                " " +
+                slotName +
+                " " +
+                nameSuffix[rng.nextInt(nameSuffix.length)];
     }
 
     // ...
@@ -138,7 +137,7 @@ public class ItemGenerator {
                     return itemBonuses;
                 }
                 @Override
-                public String toString(){ return getSlotType()+ " " + getName()+ " " + getDescription();}
+                public String toString(){ return  getName()+ " " + getDescription();}
             };
         }
     }

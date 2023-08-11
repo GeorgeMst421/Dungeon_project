@@ -1,6 +1,7 @@
 package Game.Controllers;
 
 import Enemy.AbstractEnemy;
+import Enemy.Leoric;
 import Enums.DamageType;
 import Game.*;
 import Interfaces.Equippable;
@@ -92,7 +93,7 @@ public class EnemyController {
             visited.add(start);
             while(currentRoom.current != goal) {
                 currentRoom = scanRooms.removeLast();
-                for(Room n: GameMap.getConnectedNeighbors(currentRoom.current)) { //TODO IF ERROR CHANGE FROM STATIC
+                for(Room n: GameMap.getConnectedNeighbors(currentRoom.current)) {
                     if(! visited.contains(n)) {
                         visited.add(n);
                         scanRooms.addFirst(new RoomPath(n, currentRoom));
@@ -122,4 +123,7 @@ public class EnemyController {
     }
     public Room getRoom(){return currentRoom;}
 
+    public boolean isLeoric(){
+        return this.enemy instanceof Leoric;
+    }
 }

@@ -12,9 +12,9 @@ public class Room {
     private Room N,S,W,E;
     public int row;
     public int col;
-    private List<Item> itemsOnRoom;
+    private final List<Item> itemsOnRoom;
     private AbstractEnemy enemy;
-    private boolean visited = true;//TODO false
+    private boolean visited = false;
     private boolean finish = false;
     private boolean occupied = false;
     public Room(int row, int col){
@@ -22,7 +22,7 @@ public class Room {
         this.row=row;
         this.col=col;
         this.enemy=null;
-        if( row == 24 && col == 24) finish = true;
+        if (row == 24 && col == 24 && !Game.isFinalRound()) finish = true;
     }
 
     public Room getRoomAt(Direction d){

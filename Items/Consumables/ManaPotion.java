@@ -14,8 +14,8 @@ public class ManaPotion extends AbstractItem implements Consumable {
     private final List<ItemEffect> bonusList = new ArrayList<>();
 
     public ManaPotion(){
-        super("MP potion","A potion which replenish some mana");
-        ItemEffect hp_replenish = new ItemEffect(EffectType.HP_REPLENISH,40);
+        super("MP potion","Replenish some mana");
+        bonusList.add(new ItemEffect(EffectType.MP_REPLENISH,40));
         uses = 2;
     }
     @Override

@@ -2,7 +2,6 @@ package Game;
 
 import Enemy.AbstractEnemy;
 import Enums.Direction;
-import Game.Room;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class GameMap {
         return neighborSet;
     }
     public Room getStartingRoom(){
-        return map[23][23];
+        return map[0][0];
     }
     public Room getRoomAt(int i, int j){return map[i][j];}
     public int getMapWidth(){return width;}
@@ -113,34 +112,5 @@ public class GameMap {
         List<Room> roomList = new ArrayList<>(roomSet);
         return roomList.get(rng.nextInt(roomList.size()));
     }
-
-//    public void printMap() {
-//        for(int row = 0; row < height; row++) {
-//            // Print the room row
-//            for(int col = 0; col < width; col++) {
-//                System.out.print("X");
-//                Room room = map[row][col];
-//                if (col < width - 1 && room.getRoomAt(Direction.EAST) != null) {
-//                    System.out.print("-");
-//                } else {
-//                    System.out.print(" ");
-//                }
-//            }
-//            System.out.println();
-//            // Print the connection row
-//            if (row < height - 1) {
-//                for (int col = 0; col < width; col++) {
-//                    Room room = map[row][col];
-//                    if (room.getRoomAt(Direction.SOUTH) != null) {
-//                        System.out.print("| ");
-//                    } else {
-//                        System.out.print("  ");
-//                    }
-//                }
-//                System.out.println();
-//            }
-//        }
-//    }
-
 
 }

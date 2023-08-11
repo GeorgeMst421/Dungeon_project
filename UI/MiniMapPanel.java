@@ -10,8 +10,6 @@ import java.awt.*;
 import java.util.Map;
 
 public class MiniMapPanel extends JPanel {
-
-
     private GameMap map;
     private Room curRoom;
     private Direction d;
@@ -20,9 +18,7 @@ public class MiniMapPanel extends JPanel {
         this.map = map;
         this.curRoom = map.getStartingRoom();
         this.d = Direction.SOUTH;
-
     }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -35,7 +31,7 @@ public class MiniMapPanel extends JPanel {
     public void updateMiniMap(Room newRoom, Direction newDirection) {
         this.curRoom = newRoom;
         this.d = newDirection;
-        this.repaint(); // This line causes the JPanel to be redrawn
+        this.repaint();
     }
     public void paintMiniMap(Graphics2D g,GameMap map, Room curRoom, Direction d) {
         final int mapPixelWidth = this.getWidth(); // Pixel width of the minimap
@@ -85,7 +81,7 @@ public class MiniMapPanel extends JPanel {
                 }
                 // If there's an enemy in this room, paint a red dot over it
                 if (enemyPositions.containsKey(room)) {
-                    g.setColor(Color.BLUE);
+                    g.setColor(Color.RED);
                     int enemyCenterX = offs + col*tileWidth + tileWidth/2;
                     int enemyCenterY = offs + row*tileHeight + tileHeight/2;
                     g.fillOval(enemyCenterX, enemyCenterY, tileWidth / 4, tileHeight / 4);

@@ -17,7 +17,6 @@ public class PlayerTurnManager{
     private final List<EventListener> listeners = new ArrayList<>();
     private List<Item> itemsToPickUp;
     private int currentItemIndex = 0;
-//    private GameState gameState = GameState.NORMAL;
     PlayerController playerController;
     List<EnemyController> enemyControllers;
 
@@ -27,6 +26,11 @@ public class PlayerTurnManager{
     }
 
     public boolean playerTurn(Command command) {
+        if(GameManager.gameState == GameState.END_GAME){
+            Game.log("Game has ended");
+            return false;
+        }
+
         boolean isEnemyTurn=true;
         switch (command) {
             case TURN_LEFT -> {
@@ -59,6 +63,7 @@ public class PlayerTurnManager{
                     isEnemyTurn = false;
                     break;
                 }
+
                 if (!playerController.facingEnemy()) {
                     Game.log("You are not facing an enemy");
                 }
@@ -81,6 +86,7 @@ public class PlayerTurnManager{
                     Game.log("You are facing a wall");
                     return isEnemyTurn;
                 }
+
                 EnemyController enemyController = null;
                 if(playerController.facingEnemy()){
                     enemyController = enemyControllers.stream()
@@ -103,20 +109,27 @@ public class PlayerTurnManager{
                 checkForKill(enemyController);
             }
             case REST -> {
+                if(GameManager.gameState == GameState.PICKING_UP_ITEM) {
+                    Game.log("You can't rest now. Picking up items");
+                    isEnemyTurn = false;
+                    break;
+                }
+
                 playerController.rest();
                 Game.log("Resting");
             }
             case HEALTH_POTION -> {
-                playerController.useHealthPot();
+                isEnemyTurn = playerController.useHealthPot();
             }
             case MANA_POTION -> {
-                playerController.useManaPot();
+                isEnemyTurn = playerController.useManaPot();
             }
             case PICK_UP -> {
-                if(GameManager.gameState != GameState.NORMAL) {
+                if(GameManager.gameState == GameState.PICKING_UP_ITEM) {
                     Game.log("You are already picking items.");
                     return false;
                 }
+
                 itemsToPickUp = playerController.getCurrentRoom().getItemsOnRoom();
                 if(itemsToPickUp.isEmpty()) {
                     Game.log("No items to pick up in the room");
@@ -136,12 +149,12 @@ public class PlayerTurnManager{
                 Item item = itemsToPickUp.get(currentItemIndex);
                 if(item instanceof Equippable) {
                     Equippable unequiped = playerController.equip((Equippable) item); // Unequip
-                    if( unequiped != null) {
+                    if (unequiped != null) {
                         itemsToPickUp.add(unequiped); //Drop the already equiped to the floor
                         Game.log("You droped " + unequiped.getName());
                     }
-                    Game.log("You picked up and equipped " + item);
-                } else if(item instanceof Consumable){
+                    Game.log("Equipped " + item);
+                } else if (item instanceof Consumable){
                     playerController.addToInventory((Consumable) item);
                     Game.log(item.getName() + " added to the inventory");
                 }
@@ -165,8 +178,12 @@ public class PlayerTurnManager{
                 isEnemyTurn = false;
             }
             case EXIT -> {
-                exitPickUpState();
                 isEnemyTurn = false;
+                if(GameManager.gameState != GameState.PICKING_UP_ITEM) {
+                    Game.log("You can't exit from a state right now.");
+                    break;
+                }
+                exitPickUpState();
             }
         }
 
@@ -178,10 +195,16 @@ public class PlayerTurnManager{
     }
     private void checkForKill(EnemyController enemyController){
         if (enemyController.isDead()) {
+            if(enemyController.isLeoric()){
+                Game.log("~~~~~~~~~~     CONGRATULATIONS      ~~~~~~~~~~");
+                Game.log("~~~~~~~~~~ YOU HAVE DEFEATED LEORIC ~~~~~~~~~~");
+                GameManager.gameState = GameState.END_GAME;
+            }
             int exp = enemyController.giveEXP();
             enemyControllers.remove(enemyController);
             playerController.giveEXP(exp);
         }
+
 
     }
     public void addEventListener(EventListener listener) {

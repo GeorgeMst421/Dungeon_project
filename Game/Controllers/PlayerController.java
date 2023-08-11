@@ -3,6 +3,7 @@ package Game.Controllers;
 import Enemy.*;
 import Enums.*;
 import Game.*;
+import Game.Managers.GameManager;
 import Interfaces.Consumable;
 import Interfaces.Equippable;
 import Interfaces.Item;
@@ -28,6 +29,10 @@ public class PlayerController {
         int dmg = player.calculateFinalDamage(damageTypeIntegerMap);
         player.takeDamage(dmg);
         Game.log("You have taken "+ dmg + " damage!");
+        if (!player.isAlive()){
+            Game.log("\n~~~~~~~~~~~~~ YOU DIED ~~~~~~~~~~~~~");
+            GameManager.gameState = GameState.END_GAME;
+        }
     }
     public void spell(EnemyController enemyController){
         if(player instanceof AbstractWarrior){
@@ -86,25 +91,33 @@ public class PlayerController {
         Game.log("");
     }
 
-    public void useHealthPot() {
+    public boolean useHealthPot() {
         List<HealthPotion> healthPotions = player.getConsumableItems(HealthPotion.class);
         if (healthPotions.isEmpty()) {
-            System.out.println("No health potions available");
+            Game.log("No health potions available");
+            return false;
         } else {
             player.useItem(healthPotions.get(0));
+            Game.log("Health Potion Used");
+            return true;
         }
     }
 
-    public void useManaPot() {
+    public boolean useManaPot() {
         List<ManaPotion> manaPotions = player.getConsumableItems(ManaPotion.class);
         if (manaPotions.isEmpty()) {
-            System.out.println("No mana potions available");
+            Game.log("No mana potions available");
+            return false;
         } else {
             player.useItem(manaPotions.get(0));
+            Game.log("Mana potion used");
+            return true;
         }
     }
     public void giveEXP(int exp){
+        int prevLVL = player.getLevel();
         player.addXP(exp);
+        if (prevLVL != player.getLevel()) Game.log("Level UP!");
     }
     public void rest(){
         player.rest();
