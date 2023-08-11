@@ -7,7 +7,9 @@ import Interfaces.EventListener;
 import UI.*;
 import character.AbstractChars.*;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 
 public class GameManager implements EventListener {

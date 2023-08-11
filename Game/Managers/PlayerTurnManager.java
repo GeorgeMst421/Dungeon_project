@@ -4,6 +4,7 @@ import Enums.*;
 import Game.Controllers.EnemyController;
 import Game.Controllers.PlayerController;
 import Game.Game;
+import Interfaces.Consumable;
 import Interfaces.Equippable;
 import Interfaces.EventListener;
 import Interfaces.Item;
@@ -37,6 +38,11 @@ public class PlayerTurnManager{
                 isEnemyTurn = false;
             }
             case MOVE -> {
+                if(GameManager.gameState == GameState.PICKING_UP_ITEM) {
+                    Game.log("You can't move now. Picking up items");
+                    isEnemyTurn = false;
+                    break;
+                }
                 if (playerController.facingEnemy()) {
                     Game.log("Can't move. Facing Enemy");
                     isEnemyTurn = false;
@@ -48,15 +54,15 @@ public class PlayerTurnManager{
                 }
             }
             case ATTACK -> {
+                if(GameManager.gameState == GameState.PICKING_UP_ITEM) {
+                    Game.log("You can't move now. Picking up items");
+                    isEnemyTurn = false;
+                    break;
+                }
                 if (!playerController.facingEnemy()) {
                     Game.log("You are not facing an enemy");
-                } else {
-//                    EnemyController enemyController = null;
-//                    for (EnemyController ec : enemyControllers) {
-//                        if (ec.getRoom() == playerController.getFacingRoom())
-//                            enemyController = ec;
-//                    }
-//                    assert enemyController != null;
+                }
+                else {
                     EnemyController enemyController = enemyControllers.stream()
                                     .filter(ec -> ec.getRoom() == playerController.getFacingRoom())
                                     .findFirst()
@@ -65,22 +71,17 @@ public class PlayerTurnManager{
                     checkForKill(enemyController);
                 }
             }
-//                Optional<EnemyController> enemyControllerOptional = enemyControllers.stream()
-//                        .filter(eC -> eC.getRoom() == playerController.getFacingRoom())
-//                        .findFirst();
-//                if (enemyControllerOptional.isEmpty()) {
-//                    Game.log("You are not facing an enemy");
-//                } else {
-//                    EnemyController enemyController = enemyControllerOptional.get();
-//                    playerController.attack(enemyController);
-//                    checkForKill(enemyController);
-//                }
             case SPELL -> {
+                if(GameManager.gameState == GameState.PICKING_UP_ITEM) {
+                    Game.log("You can't cast a spell now. Picking up items");
+                    isEnemyTurn = false;
+                    break;
+                }
                 if(playerController.facingWall()){
                     Game.log("You are facing a wall");
                     return isEnemyTurn;
                 }
-                EnemyController enemyController;
+                EnemyController enemyController = null;
                 if(playerController.facingEnemy()){
                     enemyController = enemyControllers.stream()
                             .filter(ec -> ec.getRoom() == playerController.getFacingRoom())
@@ -113,8 +114,8 @@ public class PlayerTurnManager{
             }
             case PICK_UP -> {
                 if(GameManager.gameState != GameState.NORMAL) {
-                    Game.log("You can't pick up an item right now.");
-                    break;
+                    Game.log("You are already picking items.");
+                    return false;
                 }
                 itemsToPickUp = playerController.getCurrentRoom().getItemsOnRoom();
                 if(itemsToPickUp.isEmpty()) {
@@ -122,7 +123,7 @@ public class PlayerTurnManager{
                 } else {
                     currentItemIndex = 0;
                     GameManager.gameState = GameState.PICKING_UP_ITEM;
-                    Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO)");
+                    Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO) (E: EXIT)");
                 }
                 isEnemyTurn = false;
             }
@@ -131,16 +132,27 @@ public class PlayerTurnManager{
                     Game.log("You can't confirm an action right now.");
                     break;
                 }
+
                 Item item = itemsToPickUp.get(currentItemIndex);
                 if(item instanceof Equippable) {
-//                    playerController.equip((Equippable) item);
-//                    playerController.getCurrentRoom().removeItem(item);
-                    Game.log("You picked up and equipped " + item.toString());
-                } else {
-                    Game.log("The item is not equippable.");
+                    Equippable unequiped = playerController.equip((Equippable) item); // Unequip
+                    if( unequiped != null) {
+                        itemsToPickUp.add(unequiped); //Drop the already equiped to the floor
+                        Game.log("You droped " + unequiped.getName());
+                    }
+                    Game.log("You picked up and equipped " + item);
+                } else if(item instanceof Consumable){
+                    playerController.addToInventory((Consumable) item);
+                    Game.log(item.getName() + " added to the inventory");
                 }
-                currentItemIndex = (currentItemIndex + 1) % itemsToPickUp.size();
-                Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO)");
+
+                itemsToPickUp.remove(item);
+                if(itemsToPickUp.size() == 0)
+                    exitPickUpState();
+                else{
+                    currentItemIndex = (currentItemIndex + 1) % itemsToPickUp.size();
+                    Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO) (E: EXIT)");
+                }
                 isEnemyTurn = false;
             }
             case NO -> {
@@ -149,19 +161,15 @@ public class PlayerTurnManager{
                     break;
                 }
                 currentItemIndex = (currentItemIndex + 1) % itemsToPickUp.size();
-                Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO)");
+                Game.log("Do you want to pick up " + itemsToPickUp.get(currentItemIndex).toString() + "? (YES/NO) (E: EXIT)");
                 isEnemyTurn = false;
             }
             case EXIT -> {
-                if(GameManager.gameState != GameState.PICKING_UP_ITEM) {
-                    Game.log("You can't exit from current action.");
-                    break;
-                }
-                GameManager.gameState = GameState.NORMAL;
-                Game.log("Exiting item pick-up.");
+                exitPickUpState();
                 isEnemyTurn = false;
             }
         }
+
         for(EventListener listener: listeners){
             listener.onEvent();
         }
@@ -179,4 +187,14 @@ public class PlayerTurnManager{
     public void addEventListener(EventListener listener) {
         listeners.add(listener);
     }
+
+    private void exitPickUpState(){
+        if(GameManager.gameState != GameState.PICKING_UP_ITEM) {
+            Game.log("You can't exit from current action.");
+            return;
+        }
+        GameManager.gameState = GameState.NORMAL;
+        Game.log("Exiting item pick-up.");
+    }
+
 }

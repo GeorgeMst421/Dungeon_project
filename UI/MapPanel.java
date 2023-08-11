@@ -20,7 +20,7 @@ public class MapPanel extends JPanel {
     final int height = 256;
     Map<String, BufferedImage> wallImages;
     private Room currentRoom;
-    private PlayerController playerController;
+    private final PlayerController playerController;
     private GameMap gameMap;
 
     public MapPanel(PlayerController playerController, GameMap gameMap) {

@@ -1,17 +1,13 @@
 package Game;
 
-import Enums.*;
-import Game.Controllers.*;
 import Game.Managers.*;
-import Items.ItemEffect;
-import Items.Weapons.*;
 import UI.*;
 import character.*;
 
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Game {
     public static int mapCounter = 1;

@@ -32,6 +32,7 @@ public class InputHandler implements KeyListener {
             case 'p' -> Command.PICK_UP;
             case 'y' -> Command.YES;
             case 'n' -> Command.NO;
+            case 'e' -> Command.EXIT;
             default  -> Command.NO_ACTION;
         };
     }

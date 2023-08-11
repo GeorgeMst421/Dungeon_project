@@ -39,6 +39,6 @@ public class PlayerWeapon extends AbstractWeapon implements Equippable {
 
     @Override
     public String toString(){
-        return slotType.toString()+ " " + description;
+        return slotType.toString()+ " " + name ;
     }
 }

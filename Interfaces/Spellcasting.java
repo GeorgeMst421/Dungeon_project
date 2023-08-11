@@ -11,10 +11,7 @@ public interface Spellcasting {
     }
     default Map<DamageType, Integer> castSpell() {
         if (this instanceof AbstractPlayer player) {
-            if(player.getCurrentMP()>5) {
-                player.reduceMP(5);
                 return calculateDamage(player.getIntelligence());
-            }
         }
         return null;
     }

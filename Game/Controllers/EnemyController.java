@@ -36,7 +36,7 @@ public class EnemyController {
             Game.log(enemy.getName() + " died. Got "+ enemy.giveEXP()+ " exp");
             if(drop != null) {
                 currentRoom.getItemsOnRoom().add(drop);
-                Game.log(enemy.getName() + " dropped " + drop.getName() + " " + drop.getDescription());
+                Game.log(enemy.getName() + " dropped " + drop.toString());
             }
             Game.log("");
             currentRoom.setEnemy(null);

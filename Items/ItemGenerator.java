@@ -104,8 +104,8 @@ public class ItemGenerator {
                 int bonus = rng.nextInt(rarity.totalBonus + 1);
                 weaponDamages.add(new Damage(dmgType, dice, bonus));
             }
-// I always use simple names for the variable "name" for example name = "PlayerWeapon". The variable itemName is actually the description of the weapon
-            return new PlayerWeapon(slotType.name(), itemName, weaponDamages, itemBonuses, slotType);
+
+            return new PlayerWeapon(itemName, slotType.name(), weaponDamages, itemBonuses, slotType);
         } else {
             return new Equippable() {
                 @Override
@@ -120,12 +120,12 @@ public class ItemGenerator {
 
                 @Override
                 public String getName() {
-                    return "Armor";
+                    return itemName;
                 }
 
                 @Override
                 public String getDescription() {
-                    return itemName;
+                    return "Armor";
                 }
 
                 @Override
@@ -138,7 +138,7 @@ public class ItemGenerator {
                     return itemBonuses;
                 }
                 @Override
-                public String toString(){ return getName()+ " " + getDescription();}
+                public String toString(){ return getSlotType()+ " " + getName()+ " " + getDescription();}
             };
         }
     }

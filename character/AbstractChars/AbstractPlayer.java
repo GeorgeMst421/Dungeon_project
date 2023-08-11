@@ -14,7 +14,7 @@ public abstract class AbstractPlayer {
     protected String name;
     protected int baseHP, baseMP, baseStr, baseInt, strength, intelligence;
     protected int maxHP,currentHP,maxMP,currentMP;
-    protected int experiencePoints=0,level=1;
+    protected int experiencePoints=0,level=0;
     protected Map<Integer, Integer> bonusHP, bonusMP, bonusStr, bonusInt;
     public Map<DamageType, Integer> defenses;
     public Map<SlotType, Equippable> equipedItems;

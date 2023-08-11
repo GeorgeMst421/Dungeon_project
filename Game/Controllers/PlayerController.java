@@ -3,6 +3,7 @@ package Game.Controllers;
 import Enemy.*;
 import Enums.*;
 import Game.*;
+import Interfaces.Consumable;
 import Interfaces.Equippable;
 import Interfaces.Item;
 import Items.Consumables.*;
@@ -33,7 +34,10 @@ public class PlayerController {
             Game.log("You can't cast spells");
             return;
         }
-
+        if(player.getCurrentMP() < 5){
+            Game.log("You don't have enough mana!");
+            return;
+        }
         Game.log("Casting Fireball!");
         Map<DamageType, Integer> damage;
         if(player instanceof AbstractMage){
@@ -42,9 +46,17 @@ public class PlayerController {
         else{
             damage = ((AbstractBattleMage) player).castSpell();
         }
+        player.reduceMP(5);
         enemyController.takeDamage(damage);
-
-
+    }
+    public Equippable equip(Equippable e){
+        Equippable unequiped = null;
+        SlotType s = e.getSlotType();
+        unequiped = player.equip(s, e);
+        return unequiped;
+    }
+    public void addToInventory(Consumable c){
+        player.inventory.add(c);
     }
     public void moveForward() {
         currentRoom.leave();
@@ -57,11 +69,9 @@ public class PlayerController {
     public void turnLeft() {
         currentDirection = currentDirection.left();
     }
-
     public void turnRight() {
         currentDirection = currentDirection.right();
     }
-
 
     private void showItemsOnRoom(){
         List<Item> roomItems = currentRoom.getItemsOnRoom();
@@ -70,18 +80,12 @@ public class PlayerController {
             else Game.log("You stepped on many Items");
 
             for (int i = 0; i < roomItems.size(); i++){
-                Game.log(i+1 + ") " + roomItems.get(i).toString() );
+                Game.log(i+1 + ") " + roomItems.get(i).toString());
             }
         }
         Game.log("");
     }
-    public void giveEXP(int exp){
-        player.addXP(exp);
-    }
 
-    public void rest(){
-        player.rest();
-    }
     public void useHealthPot() {
         List<HealthPotion> healthPotions = player.getConsumableItems(HealthPotion.class);
         if (healthPotions.isEmpty()) {
@@ -99,7 +103,12 @@ public class PlayerController {
             player.useItem(manaPotions.get(0));
         }
     }
-
+    public void giveEXP(int exp){
+        player.addXP(exp);
+    }
+    public void rest(){
+        player.rest();
+    }
     public boolean facingEnemy(){
         if(facingWall()) return false;
         AbstractEnemy enemy = currentRoom.getRoomAt(currentDirection).getEnemy();
@@ -108,7 +117,6 @@ public class PlayerController {
     public boolean facingWall(){
         return currentRoom.getRoomAt(currentDirection) == null;
     }
-
     public Room getSecondFacingRoom(){
         return currentRoom.getRoomAt(currentDirection).getRoomAt(currentDirection);
     }
